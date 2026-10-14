@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { usePersistentState } from './hooks/usePersistentState';
+import { DEFAULT_PROVIDER, parseApiKeys, parseProvider } from './utils/settings';
 import { PromptInput } from './components/PromptInput';
 import { ComponentCard } from './components/ComponentCard';
 import { useComponentGenerator } from './hooks/useComponentGenerator';
@@ -11,14 +13,20 @@ const PROVIDER_CONFIG = {
 } as const;
 
 function App() {
-  const [apiKey, setApiKey] = useState('');
+  const [apiKeys, setApiKeys] = usePersistentState<Record<Provider, string>>(
+    'rcg:apiKeys',
+    { anthropic: '', google: '' },
+    { parse: parseApiKeys },
+  );
+  const [provider, setProvider] = usePersistentState<Provider>('rcg:provider', DEFAULT_PROVIDER, {
+    parse: parseProvider,
+  });
   const [showKey, setShowKey] = useState(false);
-  const [provider, setProvider] = useState<Provider>('google');
   const [envKeys, setEnvKeys] = useState<Record<Provider, boolean>>({
     anthropic: false,
     google: false,
   });
-  const { components, isLoading, error, generate, removeComponent, clearAll } =
+  const { components, history, isLoading, error, generate, removeComponent, clearAll } =
     useComponentGenerator();
 
   useEffect(() => {
@@ -28,6 +36,7 @@ function App() {
       .catch(() => {});
   }, []);
 
+  const apiKey = apiKeys[provider];
   const hasEnvKey = envKeys[provider];
 
   const handleGenerate = (prompt: string) => {
@@ -38,9 +47,8 @@ function App() {
     generate(prompt, apiKey || undefined, provider);
   };
 
-  const handleProviderChange = (newProvider: Provider) => {
-    setProvider(newProvider);
-    setApiKey('');
+  const handleApiKeyChange = (value: string) => {
+    setApiKeys((prev) => ({ ...prev, [provider]: value }));
   };
 
   const activeProvider = PROVIDER_CONFIG[provider].label;
@@ -68,7 +76,7 @@ function App() {
 
       <main className="workspace">
         <section className="composer-panel" aria-label="컴포넌트 생성">
-          <PromptInput onGenerate={handleGenerate} isLoading={isLoading} />
+          <PromptInput onGenerate={handleGenerate} isLoading={isLoading} history={history} />
         </section>
 
         <aside className="settings-panel" aria-label="실행 설정">
@@ -81,7 +89,7 @@ function App() {
             <select
               id="provider"
               value={provider}
-              onChange={(e) => handleProviderChange(e.target.value as Provider)}
+              onChange={(e) => setProvider(e.target.value as Provider)}
             >
               {Object.entries(PROVIDER_CONFIG).map(([key, { label }]) => (
                 <option key={key} value={key}>
@@ -99,7 +107,7 @@ function App() {
                 id="api-key"
                 type={showKey ? 'text' : 'password'}
                 value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
+                onChange={(e) => handleApiKeyChange(e.target.value)}
                 placeholder={
                   hasEnvKey
                     ? '서버 키 사용 중 (직접 입력으로 덮어쓰기 가능)'
