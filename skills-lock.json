@@ -30,6 +30,12 @@
       "sourceType": "github",
       "skillPath": "deep-interview/SKILL.md",
       "computedHash": "fe5e3cfd594b395a3306d10448aca850fc5bdc25022e6150022306b3d9f95502"
+    },
+    "skill-creator": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/skill-creator/SKILL.md",
+      "computedHash": "5ea13a6d9f0d4bb694405d79acd00cadec0d21bb138c4dd10fcf3c500cb835c2"
     }
   }
 }
