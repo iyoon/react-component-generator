@@ -64,4 +64,31 @@ describe('PromptInput', () => {
     await user.click(screen.getByRole('button', { name: '컴포넌트 생성' }));
     expect(onGenerate).toHaveBeenCalledWith(value);
   });
+
+  describe('최근 프롬프트', () => {
+    it('히스토리가 있으면 칩으로 보여준다', () => {
+      render(<PromptInput onGenerate={vi.fn()} isLoading={false} history={['카드 만들어줘', '표 만들어줘']} />);
+      expect(screen.getByText('최근 프롬프트')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '카드 만들어줘' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '표 만들어줘' })).toBeInTheDocument();
+    });
+
+    it('히스토리 칩을 클릭하면 입력창에 채워진다', async () => {
+      const user = userEvent.setup();
+      render(<PromptInput onGenerate={vi.fn()} isLoading={false} history={['카드 만들어줘']} />);
+
+      await user.click(screen.getByRole('button', { name: '카드 만들어줘' }));
+      expect(screen.getByRole('textbox')).toHaveValue('카드 만들어줘');
+    });
+
+    it('히스토리가 비어 있으면 섹션을 숨긴다', () => {
+      render(<PromptInput onGenerate={vi.fn()} isLoading={false} history={[]} />);
+      expect(screen.queryByText('최근 프롬프트')).not.toBeInTheDocument();
+    });
+
+    it('history prop이 없어도 섹션이 숨겨진다', () => {
+      render(<PromptInput onGenerate={vi.fn()} isLoading={false} />);
+      expect(screen.queryByText('최근 프롬프트')).not.toBeInTheDocument();
+    });
+  });
 });
