@@ -36,8 +36,8 @@
 
 ### Test Boundary
 
-- 테스트 있음: `server/generator.ts`, `server/fallback.ts`, `src/components/PromptInput.tsx`.
-- 테스트 없음: `server/index.ts`, `src/hooks/useComponentGenerator.ts`, `src/App.tsx`, `LivePreview.tsx`, `ComponentCard.tsx`. 이 영역을 수정할 때는 변경 로직을 순수 함수로 추출해 테스트하거나, 수동 확인 결과를 보고한다.
+- 테스트 있음: `server/generator.ts`, `server/fallback.ts`, `src/components/PromptInput.tsx`, `src/hooks/useComponentGenerator.ts`, `src/hooks/usePersistentState.ts`, `src/App.tsx`, `src/utils/`.
+- 테스트 없음: `server/index.ts`, `LivePreview.tsx`, `ComponentCard.tsx`. 이 영역을 수정할 때는 변경 로직을 순수 함수로 추출해 테스트하거나, 수동 확인 결과를 보고한다.
 
 ## Project Context
 
